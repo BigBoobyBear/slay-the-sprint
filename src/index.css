@@ -1,0 +1,175 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Kreon', Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Spire-at-night palette (original, painterly) */
+  --color-ink: #0d0f14;
+  --color-night: #141823;
+  --color-dusk: #1e2433;
+  --color-slate: #2b3245;
+  --color-mist: #8d97ad;
+  --color-parchment: #efe3c8;
+  --color-bone: #f7f1e3;
+  --color-gold: #e8b64c;
+  --color-ember: #e0603a;
+  --color-blood: #b3263a;
+  --color-moss: #4f8a4b;
+  --color-indigo: #4c5fb8;
+  --color-sky: #57a6d9;
+  --color-curse: #6f4a8e;
+
+  /* Card frame colours by type */
+  --color-attack: #a8333f;
+  --color-skill: #3f7a4a;
+  --color-power: #3e57a8;
+  --color-status: #555b6b;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-ink);
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+/* Painted backdrop used by game screens */
+.bg-spire {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 110%, rgb(224 96 58 / 0.18), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 15% 10%, rgb(76 95 184 / 0.22), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 90% 20%, rgb(111 74 142 / 0.2), transparent 70%),
+    linear-gradient(180deg, #121624 0%, #0d0f14 100%);
+}
+
+.bg-act-1 {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgb(79 138 75 / 0.22), transparent 65%),
+    radial-gradient(ellipse 50% 40% at 80% 15%, rgb(232 182 76 / 0.12), transparent 70%),
+    linear-gradient(180deg, #151b1a 0%, #0d0f14 100%);
+}
+.bg-act-2 {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgb(87 166 217 / 0.2), transparent 65%),
+    radial-gradient(ellipse 50% 40% at 15% 15%, rgb(179 38 58 / 0.14), transparent 70%),
+    linear-gradient(180deg, #121a24 0%, #0d0f14 100%);
+}
+.bg-act-3 {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgb(111 74 142 / 0.28), transparent 65%),
+    radial-gradient(ellipse 50% 40% at 85% 10%, rgb(224 96 58 / 0.16), transparent 70%),
+    linear-gradient(180deg, #19142a 0%, #0d0f14 100%);
+}
+
+/* Faint brush-stroke grain over everything */
+.grain::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.text-shadow {
+  text-shadow: 0 2px 0 rgb(0 0 0 / 0.6), 0 0 12px rgb(0 0 0 / 0.5);
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-md border-2 px-4 py-2 font-display text-lg font-bold tracking-wide transition select-none;
+  @apply border-gold/70 bg-dusk text-parchment shadow-[0_3px_0_rgb(0_0_0/0.5)];
+}
+.btn:hover:not(:disabled) {
+  @apply border-gold bg-slate text-bone -translate-y-px;
+}
+.btn:active:not(:disabled) {
+  @apply translate-y-px shadow-none;
+}
+.btn:disabled {
+  @apply cursor-not-allowed opacity-40;
+}
+.btn-primary {
+  @apply border-gold bg-ember/90 text-bone;
+}
+.btn-primary:hover:not(:disabled) {
+  @apply bg-ember;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.015);
+  }
+}
+.animate-breathe {
+  animation: breathe 3.2s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+.animate-hit {
+  animation: shake 0.25s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------- CV page (light, printable) ---------- */
+.cv-page {
+  --cv-ink: #1b2233;
+  --cv-muted: #5a6478;
+  --cv-accent: #2a4a7f;
+  --cv-rule: #d8dce6;
+  background: #fbfaf7;
+  color: var(--cv-ink);
+}
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .cv-page {
+    background: white;
+  }
+  body {
+    background: white;
+  }
+}
