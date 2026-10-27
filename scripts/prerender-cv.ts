@@ -7,6 +7,7 @@ import { createElement, type FC } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { createServer } from 'vite'
 import type * as CvModule from '../src/cv/CvPage'
+import { personJsonLd } from '../src/cv/jsonLd'
 import type * as ProfileModule from '../src/content/profile'
 
 const base = process.env.BASE_PATH ?? '/slay-the-sprint/'
@@ -14,7 +15,7 @@ const siteUrl = (process.env.SITE_ORIGIN ?? 'https://bigboobybear.github.io') + 
 
 const vite = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' })
 try {
-  const { CvPage, personJsonLd } = (await vite.ssrLoadModule('/src/cv/CvPage.tsx')) as typeof CvModule
+  const { CvPage } = (await vite.ssrLoadModule('/src/cv/CvPage.tsx')) as typeof CvModule
   const { profile } = (await vite.ssrLoadModule('/src/content/profile.ts')) as typeof ProfileModule
 
   const gameHtml = readFileSync('dist/index.html', 'utf8')
