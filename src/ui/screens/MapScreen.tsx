@@ -60,12 +60,14 @@ export function MapScreen() {
         <p className="mt-3 hidden text-sm text-mist md:block">Choose a glowing room to move. Paths only go up.</p>
         <ul className="mt-3 grid grid-cols-4 gap-1 text-xs md:grid-cols-1 md:gap-1.5 md:text-sm">
           {(Object.keys(NODE_INFO) as NodeType[]).map((t) => (
-            <li key={t} className="flex items-center gap-2" title={NODE_INFO[t].hint}>
-              <span className="w-5 text-center text-lg" style={{ color: NODE_INFO[t].color }} aria-hidden="true">
+            <li key={t} className="flex items-start gap-2" title={NODE_INFO[t].hint}>
+              <span className="w-5 shrink-0 text-center text-lg leading-6" style={{ color: NODE_INFO[t].color }} aria-hidden="true">
                 {NODE_INFO[t].glyph}
               </span>
-              <span className="text-parchment">{NODE_INFO[t].label}</span>
-              <span className="hidden text-mist lg:inline">— {NODE_INFO[t].hint}</span>
+              <span>
+                <span className="block leading-6 text-parchment">{NODE_INFO[t].label}</span>
+                <span className="hidden text-xs leading-snug text-mist md:block">{NODE_INFO[t].hint}</span>
+              </span>
             </li>
           ))}
         </ul>

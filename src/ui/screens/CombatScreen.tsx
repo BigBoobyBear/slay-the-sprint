@@ -30,14 +30,20 @@ const INTENT_STYLE: Record<IntentKind, { icon: string; color: string; label: str
   unknown: { icon: '?', color: '#8d97ad', label: 'Unknown' },
 }
 
-function useCardWidth() {
-  const [w, setW] = useState(() => (typeof window === 'undefined' ? 130 : window.innerWidth))
+function useViewport() {
+  const read = () => ({ w: window.innerWidth, h: window.innerHeight })
+  const [size, setSize] = useState(read)
   useEffect(() => {
-    const onResize = () => setW(window.innerWidth)
+    const onResize = () => setSize(read())
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])
-  return Math.round(Math.max(84, Math.min(138, w / 8.5)))
+  return size
+}
+
+/** Card width that fits both the width and the height of the window. */
+function cardWidthFor({ w, h }: { w: number; h: number }) {
+  return Math.round(Math.max(80, Math.min(138, w / 8.5, h / 6.6)))
 }
 
 function Intent({ enemy }: { enemy: EnemyState }) {
@@ -70,7 +76,7 @@ function Intent({ enemy }: { enemy: EnemyState }) {
 
 function PopupLayer({ popups, target }: { popups: Popup[]; target: 'player' | number }) {
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-1/4 z-20 flex justify-center">
+    <div className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex justify-center">
       <AnimatePresence>
         {popups
           .filter((p) => p.target === target)
@@ -100,7 +106,9 @@ export function CombatScreen() {
   const fxSeq = useGame((s) => s.fxSeq)
   const overlayOpen = useGame((s) => s.overlay !== null || s.inspect !== null)
   const c = run.combat!
-  const cardW = useCardWidth()
+  const viewport = useViewport()
+  const cardW = cardWidthFor(viewport)
+  const narrow = viewport.w < 640
   const [selected, setSelected] = useState<number | null>(null)
   const [targetIdx, setTargetIdx] = useState(0)
   const [pendingPotion, setPendingPotion] = useState<number | null>(null)
@@ -159,7 +167,12 @@ export function CombatScreen() {
       return
     }
     setPendingPotion(null)
-    if (r.def.target === 'enemy' && alive.length > 1) setSelected(selected === uid ? null : uid)
+    // On phones the first tap enlarges the card so it can be read.
+    if (narrow && selected !== uid) {
+      setSelected(uid)
+      return
+    }
+    if (r.def.target === 'enemy' && alive.length > 1) setSelected(!narrow && selected === uid ? null : uid)
     else play(uid, alive[0]?.uid)
   }
 
@@ -218,7 +231,7 @@ export function CombatScreen() {
   const act = ACTS[run.act - 1]
   const ctxTarget = target ?? alive[0]
   const n = c.hand.length
-  const overlap = n > 1 ? Math.min(0, (Math.min(960, window.innerWidth - 40) - n * cardW) / (n - 1)) : 0
+  const overlap = n > 1 ? Math.min(0, (Math.min(960, viewport.w - (narrow ? 24 : 260)) - n * cardW) / (n - 1)) : 0
 
   return (
     <div className={`bg-act-${run.act} relative flex min-h-0 flex-1 flex-col`}>
@@ -229,20 +242,25 @@ export function CombatScreen() {
         <p className="font-display text-sm tracking-widest text-mist uppercase">
           {c.tier === 'boss' ? 'Boss' : c.tier === 'elite' ? 'Elite' : act.name} · Turn {c.turn}
         </p>
+        {(needsTarget || potionNeedsTarget) && (
+          <p className="mt-2 rounded-full bg-ink/80 px-4 py-1 text-sm font-semibold whitespace-nowrap text-gold text-shadow" role="status">
+            Choose a target: click an enemy (or ←/→ then Enter). Esc cancels.
+          </p>
+        )}
       </div>
 
       {/* Battlefield */}
-      <div className="flex flex-1 items-end justify-between gap-2 px-2 pt-10 pb-2 sm:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 items-center justify-around gap-2 px-2 pt-10 pb-2 sm:px-8">
         <div className="relative flex flex-col items-center">
           <PopupLayer popups={popups} target="player" />
-          <Engineer size={Math.max(110, cardW * 1.25)} hit={hit.has('player')} />
+          <Engineer size={Math.max(110, cardW * 1.45)} hit={hit.has('player')} />
           <HealthBar hp={c.player.hp} maxHp={c.player.maxHp} block={c.player.block} />
           <div className="mt-1">
             <StatusRow statuses={c.player.statuses} />
           </div>
         </div>
 
-        <div className="flex flex-1 flex-wrap items-end justify-end gap-x-2 gap-y-4 sm:gap-x-6">
+        <div className="flex flex-wrap items-end justify-end gap-x-2 gap-y-4 sm:gap-x-8">
           <AnimatePresence>
             {c.enemies.map((e) => {
               if (e.hp <= 0)
@@ -265,7 +283,7 @@ export function CombatScreen() {
                     className={`rounded-xl transition ${targetable ? 'cursor-crosshair hover:drop-shadow-[0_0_14px_rgb(232_182_76/0.9)]' : ''} ${isTarget ? 'drop-shadow-[0_0_14px_rgb(232_182_76/0.9)]' : ''}`}
                     aria-label={`${def.name}, ${e.hp} of ${e.maxHp} Morale${e.block ? `, ${e.block} Block` : ''}. ${targetable ? 'Select as target.' : 'Inspect.'}`}
                   >
-                    <Monster art={def.art} size={Math.max(78, cardW * (def.size ?? 1))} hit={hit.has(e.uid)} />
+                    <Monster art={def.art} size={Math.max(78, cardW * 1.2 * (def.size ?? 1) * (alive.length > 2 ? 0.85 : 1))} hit={hit.has(e.uid)} />
                   </button>
                   <p className="max-w-40 text-center font-display text-sm leading-tight font-bold text-parchment text-shadow">{def.name}</p>
                   <HealthBar hp={e.hp} maxHp={e.maxHp} block={e.block} compact />
@@ -279,17 +297,12 @@ export function CombatScreen() {
         </div>
       </div>
 
-      {(needsTarget || potionNeedsTarget) && (
-        <p className="text-center text-sm font-semibold text-gold text-shadow" role="status">
-          Choose a target (click an enemy, or ←/→ then Enter). Esc to cancel.
-        </p>
-      )}
 
       {/* Hand & controls */}
-      <div className="relative flex items-end gap-2 px-2 pb-2 sm:px-4">
-        <div className="flex flex-col items-center gap-2">
+      <div className="relative flex flex-wrap items-end justify-between gap-2 px-2 pb-2 sm:flex-nowrap sm:px-4">
+        <div className="order-1 flex items-center gap-2 sm:flex-col">
           <div
-            className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-black/70 font-display text-2xl font-bold text-ink shadow-[0_0_20px_rgb(232_182_76/0.5)]"
+            className="flex h-12 w-12 items-center justify-center rounded-full border-4 text-xl sm:h-16 sm:w-16 border-black/70 font-display text-2xl font-bold text-ink shadow-[0_0_20px_rgb(232_182_76/0.5)]"
             style={{ background: 'radial-gradient(circle at 35% 30%, #fff1c4, #e8b64c 55%, #9a6b1f)' }}
             title="Focus (energy) left this turn"
             aria-label={`${c.energy} of ${c.maxEnergy} Focus`}
@@ -308,7 +321,7 @@ export function CombatScreen() {
           </div>
         </div>
 
-        <ul className="flex min-w-0 flex-1 items-end justify-center pt-4" aria-label="Your hand">
+        <ul className="order-3 flex w-full min-w-0 items-end justify-center pt-6 pb-6 sm:order-2 sm:w-auto sm:flex-1" aria-label="Your hand">
           <AnimatePresence initial={false}>
             {c.hand.map((card, i) => {
               const r = resolveInstance(card, c.tempUpgrades)
@@ -321,13 +334,13 @@ export function CombatScreen() {
                   key={card.uid}
                   layout
                   initial={{ opacity: 0, y: 80, scale: 0.8 }}
-                  animate={{ opacity: 1, y: isSel ? -28 : Math.abs(i - mid) * 4, rotate: isSel ? 0 : rot, scale: isSel ? 1.08 : 1 }}
-                  exit={{ opacity: 0, y: -120, scale: 0.7 }}
-                  whileHover={{ y: -24, rotate: 0, scale: 1.08, zIndex: 30 }}
+                  animate={{ opacity: 1, x: isSel && narrow ? (mid - i) * (cardW + overlap) : 0, y: isSel ? (narrow ? -70 : -28) : Math.abs(i - mid) * 3, rotate: isSel ? 0 : rot, scale: isSel ? (narrow ? 1.6 : 1.08) : 1 }}
+                  exit={{ opacity: 0, y: -140, scale: 0.7, transition: { duration: 0.22 } }}
                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   style={{ marginLeft: i === 0 ? 0 : overlap, zIndex: isSel ? 40 : i }}
-                  className="relative"
+                  className="group relative hover:!z-50"
                 >
+                  <div className="transition-transform duration-150 group-hover:-translate-y-6 group-hover:scale-105">
                   <CardView
                     id={card.id}
                     resolved={r}
@@ -340,13 +353,14 @@ export function CombatScreen() {
                     onClick={() => clickCard(card.uid)}
                     label={`${i + 1}: ${r.name}, cost ${r.cost}.`}
                   />
+                  </div>
                 </motion.li>
               )
             })}
           </AnimatePresence>
         </ul>
 
-        <div className="flex flex-col items-center gap-2">
+        <div className="order-2 flex items-center gap-2 sm:order-3 sm:flex-col">
           <button
             type="button"
             className="btn btn-primary px-3 py-2"
@@ -367,7 +381,7 @@ export function CombatScreen() {
               Exhaust {c.exhaustPile.length}
             </button>
           )}
-          <button type="button" className="text-xs text-mist underline hover:text-gold" onClick={() => setOverlay('help')}>
+          <button type="button" className="hidden text-xs text-mist underline hover:text-gold sm:block" onClick={() => setOverlay('help')}>
             <Icon name="book" size={12} className="mr-1 inline" />
             How to play
           </button>
