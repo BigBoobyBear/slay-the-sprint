@@ -4,7 +4,7 @@ import './index.css'
 import { CardView } from './ui/components/Card'
 import { Engineer, Monster } from './ui/art/Monster'
 
-function OgCard() {
+export function OgCard() {
   return (
     <div className="bg-spire relative flex h-[630px] w-[1200px] items-center overflow-hidden px-16">
       <div className="z-10 w-[560px]">

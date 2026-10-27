@@ -20,7 +20,6 @@ try {
 
   const gameHtml = readFileSync('dist/index.html', 'utf8')
   const styles = gameHtml.match(/<link rel="stylesheet"[^>]*>/g) ?? []
-  const fonts = gameHtml.match(/<link (?:rel="preconnect"|href="https:\/\/fonts)[^>]*>/g) ?? []
 
   const escape = (s: string) => s.replace(/</g, '\\u003c')
   const body = renderToStaticMarkup(createElement(CvPage as FC<{ base: string }>, { base }))
@@ -40,7 +39,6 @@ try {
     <meta property="og:image" content="${siteUrl}og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="${base}favicon.svg" />
-    ${fonts.join('\n    ')}
     ${styles.join('\n    ')}
     <script type="application/ld+json">${escape(JSON.stringify(personJsonLd(siteUrl)))}</script>
   </head>

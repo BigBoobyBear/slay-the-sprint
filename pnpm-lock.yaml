@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@fontsource/inter':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/kreon':
+        specifier: ^5.3.0
+        version: 5.3.0
       motion:
         specifier: ^14.6.0
         version: 14.6.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -296,6 +302,12 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
+
+  '@fontsource/inter@5.3.0':
+    resolution: {integrity: sha512-RofMylZmjlJEfELXeNHFWBRcSs75rGU/6bV2S2jfnvv/3rPXPGe0LgUJTklcHZ9lM4OZmAVFhcJPnACfb91A3g==}
+
+  '@fontsource/kreon@5.3.0':
+    resolution: {integrity: sha512-3T2bS3Ls9URaM3OJ/wH7HmE0T+n0Yw6lGFrwtoGcummJpDpwvCBEWsuinBO/tyCpScLDLGcx0ansjd84nZRJtg==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -1446,6 +1458,10 @@ snapshots:
     optional: true
 
   '@exodus/bytes@1.16.0': {}
+
+  '@fontsource/inter@5.3.0': {}
+
+  '@fontsource/kreon@5.3.0': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
