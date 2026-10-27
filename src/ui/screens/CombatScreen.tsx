@@ -137,12 +137,10 @@ export function CombatScreen() {
     setPopups((p) => [...p, ...next])
     setHit(hits)
     const ids = new Set(next.map((p) => p.id))
-    const t1 = setTimeout(() => setHit(new Set()), 300)
-    const t2 = setTimeout(() => setPopups((p) => p.filter((x) => !ids.has(x.id))), 900)
-    return () => {
-      clearTimeout(t1)
-      clearTimeout(t2)
-    }
+    // These timers are never cancelled: if a new action lands before they
+    // fire, the old popups must still go away.
+    setTimeout(() => setHit(new Set()), 300)
+    setTimeout(() => setPopups((p) => p.filter((x) => !ids.has(x.id))), 900)
     // fxSeq changes on every dispatch, so each batch shows once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fxSeq])

@@ -62,10 +62,10 @@ export function CardView({ id, upgraded = false, ctx, playable, selected, dimmed
     >
       {/* name banner */}
       <div
-        className="relative z-10 mt-2 mr-2 truncate rounded-md border border-black/40 bg-parchment py-[3px] pr-1 text-center font-display leading-tight font-bold text-ink shadow"
-        style={{ fontSize: (card.name.length > 16 ? 10.5 : card.name.length > 14 ? 11.5 : card.name.length > 11 ? 12.5 : 14) * scale, marginLeft: 24 * scale, paddingLeft: 8 * scale }}
+        className="relative z-10 mt-2 mr-2 rounded-md border border-black/40 bg-parchment py-[3px] pr-1 text-center font-display leading-[1.05] font-bold text-ink shadow"
+        style={{ fontSize: (card.name.length > 14 ? 11.5 : card.name.length > 11 ? 12.5 : 14) * scale, marginLeft: 24 * scale, paddingLeft: 8 * scale }}
       >
-        <span className={card.upgraded ? 'text-moss' : undefined}>{card.name}</span>
+        <span className={card.upgraded ? 'text-[#2c6a2a]' : undefined}>{card.name}</span>
       </div>
       {/* art */}
       <div className="mx-3 mt-1.5 flex items-center justify-center rounded-md border border-black/40 bg-black/30" style={{ height: 62 * scale }}>
