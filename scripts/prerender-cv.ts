@@ -37,6 +37,8 @@ try {
     <meta property="og:type" content="profile" />
     <meta property="og:title" content="${profile.name} — Senior Software Engineer" />
     <meta property="og:description" content="${description}" />
+    <meta property="og:image" content="${siteUrl}og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="${base}favicon.svg" />
     ${fonts.join('\n    ')}
     ${styles.join('\n    ')}
