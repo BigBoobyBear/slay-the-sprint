@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { useState } from 'react'
 import { profile } from '../../content/profile'
 import { useGame } from '../../store/gameStore'
@@ -32,7 +32,7 @@ export function TitleScreen() {
         <Monster art="deadline" size={150} />
       </div>
 
-      <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="relative text-center">
+      <m.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="relative text-center">
         <p className="font-display text-sm tracking-[0.35em] text-mist uppercase">A deckbuilding CV</p>
         <h1 className="mt-1 font-display text-5xl leading-none font-bold text-gold text-shadow sm:text-7xl">
           Slay the <span className="text-ember">Sprint</span>
@@ -41,7 +41,7 @@ export function TitleScreen() {
           Climb six years of the career of <b>{profile.name}</b>
         </p>
         <p className="text-sm text-mist">{profile.headline}</p>
-      </motion.div>
+      </m.div>
 
       <div className="relative mt-6">
         <Engineer size={150} />

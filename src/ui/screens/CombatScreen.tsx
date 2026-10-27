@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ACTS } from '../../content/acts'
 import { ENEMY_BY_ID } from '../../content/enemies'
@@ -81,7 +81,7 @@ function PopupLayer({ popups, target }: { popups: Popup[]; target: 'player' | nu
         {popups
           .filter((p) => p.target === target)
           .map((p, i) => (
-            <motion.span
+            <m.span
               key={p.id}
               initial={{ opacity: 0, y: 0, scale: 0.6 }}
               animate={{ opacity: 1, y: -50 - i * 14, scale: 1.15 }}
@@ -91,7 +91,7 @@ function PopupLayer({ popups, target }: { popups: Popup[]; target: 'player' | nu
               style={{ color: p.color }}
             >
               {p.text}
-            </motion.span>
+            </m.span>
           ))}
       </AnimatePresence>
     </div>
@@ -269,7 +269,7 @@ export function CombatScreen() {
               const isTarget = (needsTarget || potionNeedsTarget) && target?.uid === e.uid
               const targetable = needsTarget || potionNeedsTarget
               return (
-                <motion.div key={e.uid} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6, filter: 'blur(4px)' }} transition={{ duration: 0.35 }} className="relative flex flex-col items-center">
+                <m.div key={e.uid} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.6, filter: 'blur(4px)' }} transition={{ duration: 0.35 }} className="relative flex flex-col items-center">
                   <Intent enemy={e} />
                   <PopupLayer popups={popups} target={e.uid} />
                   <button
@@ -290,7 +290,7 @@ export function CombatScreen() {
                   <div className="mt-1">
                     <StatusRow statuses={e.statuses} />
                   </div>
-                </motion.div>
+                </m.div>
               )
             })}
           </AnimatePresence>
@@ -330,7 +330,7 @@ export function CombatScreen() {
               const mid = (n - 1) / 2
               const rot = (i - mid) * Math.min(4, 24 / Math.max(1, n))
               return (
-                <motion.li
+                <m.li
                   key={card.uid}
                   layout
                   initial={{ opacity: 0, y: 80, scale: 0.8 }}
@@ -354,7 +354,7 @@ export function CombatScreen() {
                     label={`${i + 1}: ${r.name}, cost ${r.cost}.`}
                   />
                   </div>
-                </motion.li>
+                </m.li>
               )
             })}
           </AnimatePresence>

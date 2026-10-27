@@ -203,6 +203,19 @@ describe('run flow', () => {
     expect(after.screen).toBe('map')
   })
 
+  it('leaving a reward collects unclaimed Commits and relics', () => {
+    let run = inCombat(['console-error'])
+    run.combat!.tier = 'elite'
+    run.combat!.enemies[0].hp = 1
+    run.combat!.hand = [{ uid: 903, id: 'commit', upgraded: false }]
+    run = reduce(run, { type: 'PLAY_CARD', uid: 903, target: run.combat!.enemies[0].uid })
+    const { gold, relic } = run.reward!
+    const before = run.gold
+    run = reduce(run, { type: 'LEAVE_REWARD' })
+    expect(run.gold).toBe(before + gold)
+    if (relic) expect(run.relics).toContain(relic)
+  })
+
   it('rest heals 30% and can only be used once', () => {
     let run = reduce(newRun('X'), { type: 'CHOOSE_ONBOARDING', option: 'gold' })
     run.screen = 'rest'

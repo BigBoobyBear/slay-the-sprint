@@ -13,7 +13,8 @@ import { generateMap, reachableNodes } from './map'
 import { hashSeed, rngOf, type Rng } from './rng'
 import type { Action, CardInstance, Rarity, RewardState, RunState, ShopItem } from './types'
 
-export const SAVE_VERSION = 1
+export { SAVE_VERSION } from './version'
+import { SAVE_VERSION } from './version'
 export const POTION_SLOTS = 3
 export const REMOVE_PRICE = 75
 
@@ -386,6 +387,15 @@ function apply(run: RunState, action: Action) {
     }
     case 'LEAVE_REWARD': {
       if (run.screen !== 'reward') return
+      // Don't let anyone lose Commits or a relic (a certification!) by
+      // leaving early. Cards, potions and boss relics stay optional.
+      const r = run.reward
+      if (r && !r.goldTaken) {
+        r.goldTaken = true
+        run.gold += r.gold
+        run.stats.goldEarned += r.gold
+      }
+      if (r?.relic) gainRelic(run, r.relic)
       const wasBoss = run.combat?.tier === 'boss'
       run.reward = null
       run.combat = null

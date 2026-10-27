@@ -358,7 +358,7 @@ export const ENEMIES: EnemyDef[] = [
     name: 'Azure AD B2C Head',
     hp: [64, 64],
     tier: 'boss',
-    art: 'hydra',
+    art: 'hydra-b2c',
     size: 1.25,
     cv: 'Boss of Act 2. Built the new sign-up flow on Azure AD B2C: API-key and host checks on every endpoint.',
     moves: {
@@ -379,7 +379,7 @@ export const ENEMIES: EnemyDef[] = [
     name: 'Firebase Head',
     hp: [56, 56],
     tier: 'boss',
-    art: 'hydra',
+    art: 'hydra-firebase',
     size: 1.15,
     cv: 'Firebase Cloud Functions + Realtime DB behind the sign-up flow, deployed by Azure Pipelines and GitHub Actions.',
     moves: {
@@ -393,7 +393,7 @@ export const ENEMIES: EnemyDef[] = [
     name: 'Key Vault Head',
     hp: [50, 50],
     tier: 'boss',
-    art: 'hydra',
+    art: 'hydra-keyvault',
     size: 1.1,
     cv: 'Secrets moved into Azure Key Vault, with gitleaks scanning in every deploy pipeline.',
     moves: {

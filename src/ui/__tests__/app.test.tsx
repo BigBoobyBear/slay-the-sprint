@@ -27,20 +27,20 @@ describe('App (integration)', () => {
     expect(screen.queryByRole('dialog', { name: 'Curriculum vitae' })).not.toBeInTheDocument()
   })
 
-  it('plays from onboarding into a fight, plays a card and ends a turn', () => {
+  it('plays from onboarding into a fight, plays a card and ends a turn', async () => {
     render(<App />)
     fireEvent.change(screen.getByLabelText('Seed'), { target: { value: 'DEMO' } })
     fireEvent.click(screen.getByText('Start a run'))
+    expect(await screen.findByText('Onboarding Day', {}, { timeout: 3000 })).toBeInTheDocument()
     expect(useGame.getState().run!.seed).toBe('DEMO')
-    expect(screen.getByText('Onboarding Day')).toBeInTheDocument()
     fireEvent.click(screen.getByText('Graduate from PTIT'))
 
     // Map: first-floor rooms are available buttons
-    const rooms = screen.getAllByRole('button', { name: /Floor 1: Fight.*\(available\)/ })
+    const rooms = await screen.findAllByRole('button', { name: /Floor 1: Fight.*\(available\)/ })
     fireEvent.click(rooms[0])
     expect(useGame.getState().run!.screen).toBe('combat')
 
-    const hand = screen.getByRole('list', { name: 'Your hand' })
+    const hand = await screen.findByRole('list', { name: 'Your hand' })
     // A Skill needs no target, so one click plays it.
     const run = useGame.getState().run!
     const idx = run.combat!.hand.findIndex((c) => c.id === 'unit-test' || c.id === 'stand-up')
@@ -56,22 +56,22 @@ describe('App (integration)', () => {
     expect(after.screen === 'combat' ? after.combat!.turn : 2).toBe(2)
   })
 
-  it('Skip to CV is available during a run and inspect shows the CV story', () => {
+  it('Skip to CV is available during a run and inspect shows the CV story', async () => {
     render(<App />)
     fireEvent.click(screen.getByText('Start a run'))
-    fireEvent.click(screen.getByText('Start committing early'))
-    fireEvent.click(screen.getByRole('button', { name: /Relic VS Code/ }))
+    fireEvent.click(await screen.findByText('Start committing early', {}, { timeout: 3000 }))
+    fireEvent.click(await screen.findByRole('button', { name: /Relic VS Code/ }))
     expect(screen.getByText('From the CV')).toBeInTheDocument()
     fireEvent.keyDown(window, { key: 'Escape' })
     fireEvent.click(screen.getByText('Skip to CV'))
     expect(screen.getByRole('dialog', { name: 'Curriculum vitae' })).toBeInTheDocument()
   })
 
-  it('the Codex lists every chapter of the career', () => {
+  it('the Codex lists every chapter of the career', async () => {
     render(<App />)
     fireEvent.click(screen.getByText('Start a run'))
-    fireEvent.click(screen.getByText('Start committing early'))
-    fireEvent.click(screen.getByTitle(/Codex/))
+    fireEvent.click(await screen.findByText('Start committing early', {}, { timeout: 3000 }))
+    fireEvent.click(await screen.findByTitle(/Codex/))
     fireEvent.click(screen.getByRole('tab', { name: 'Acts = Career' }))
     expect(screen.getByText(/Chapter 3 · Optimizely CMS Migration/)).toBeInTheDocument()
   })

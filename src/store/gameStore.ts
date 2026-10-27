@@ -2,7 +2,8 @@ import { create } from 'zustand'
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware'
 import { playSfx, type Sfx } from '../audio/sfx'
 import { randomSeed } from '../engine/rng'
-import { SAVE_VERSION, newRun, reduce } from '../engine/run'
+import type * as EngineModule from '../engine/run'
+import { SAVE_VERSION } from '../engine/version'
 import type { Action, FxEvent, RunState } from '../engine/types'
 
 export type Overlay = null | 'cv' | 'deck' | 'codex' | 'draw' | 'discard' | 'exhaust' | 'help'
@@ -58,6 +59,15 @@ const safeStorage: StateStorage = {
   },
 }
 
+// The engine (and all game content) is loaded on demand, so the title
+// screen and CV don't have to download it first.
+let engine: typeof EngineModule | null = null
+export const loadEngine = () =>
+  import('../engine/run').then((mod) => {
+    engine = mod
+    return mod
+  })
+
 function soundFor(fx: FxEvent[]): Sfx | null {
   if (fx.some((f) => f.type === 'death')) return 'death'
   if (fx.some((f) => f.type === 'damage' && f.amount > 0)) return 'hit'
@@ -80,8 +90,8 @@ export const useGame = create<GameStore>()(
       fxSeq: 0,
       dispatch: (action) => {
         const { run, muted } = get()
-        if (!run) return
-        const next = reduce(run, action)
+        if (!run || !engine) return
+        const next = engine.reduce(run, action)
         set({ run: next, fxSeq: get().fxSeq + 1 })
         if (muted) return
         if (next.screen !== run.screen && next.screen === 'victory') playSfx('victory')
@@ -93,9 +103,9 @@ export const useGame = create<GameStore>()(
       },
       startRun: (opts) => {
         const seed = opts?.seed?.trim().toUpperCase() || randomSeed()
-        set({ run: newRun(seed, get().storyMode), view: 'game', overlay: null, inspect: null })
+        void loadEngine().then(({ newRun }) => set({ run: newRun(seed, get().storyMode), view: 'game', overlay: null, inspect: null }))
       },
-      continueRun: () => set({ view: 'game', overlay: null }),
+      continueRun: () => void loadEngine().then(() => set({ view: 'game', overlay: null })),
       abandonRun: () => set({ run: null, view: 'title', overlay: null, inspect: null }),
       toTitle: () => set({ view: 'title', overlay: null, inspect: null }),
       setOverlay: (overlay) => set({ overlay }),

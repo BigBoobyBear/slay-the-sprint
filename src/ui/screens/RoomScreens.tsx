@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { useState, type ReactNode } from 'react'
 import { ACTS } from '../../content/acts'
 import { CARD_BY_ID } from '../../content/cards'
@@ -19,12 +19,12 @@ function Room({ title, kicker, children, art }: { title: string; kicker?: string
   const run = useGame((s) => s.run)!
   return (
     <div className={`bg-act-${run.act} flex min-h-0 flex-1 justify-center overflow-y-auto px-3 py-6`}>
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="w-full max-w-3xl">
+      <m.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="w-full max-w-3xl">
         {kicker && <p className="text-center font-display text-sm tracking-widest text-mist uppercase">{kicker}</p>}
         <h1 className="text-center font-display text-3xl font-bold text-gold text-shadow sm:text-4xl">{title}</h1>
         {art && <div className="mt-4 flex justify-center">{art}</div>}
         <div className="mt-5">{children}</div>
-      </motion.div>
+      </m.div>
     </div>
   )
 }
@@ -473,7 +473,7 @@ export function DefeatScreen() {
   const run = useGame((s) => s.run)!
   const startRun = useGame((s) => s.startRun)
   const setStoryMode = useGame((s) => s.setStoryMode)
-  const where = run.combat ? run.combat.enemies.map((e) => ENEMY_BY_ID[e.defId].name).join(', ') : 'the climb'
+  const where = run.combat ? [...new Set(run.combat.enemies.map((e) => ENEMY_BY_ID[e.defId].name))].join(', ') : 'the climb'
   return (
     <Room title="Sprint failed" kicker={`Burned out against ${where}`}>
       <p className="mx-auto max-w-xl text-center text-parchment">
